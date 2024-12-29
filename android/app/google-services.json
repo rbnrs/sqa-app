@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "651712574900",
+    "project_id": "sqa-app-rbrns",
+    "storage_bucket": "sqa-app-rbrns.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651712574900:android:872a4c3a4eb6773276eee1",
+        "android_client_info": {
+          "package_name": "com.rbrns.sqa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmMXHCVwGJezlXoP35mC6R_Qww5SIXs_M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
