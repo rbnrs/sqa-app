@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "sqa",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define",
+                "ACCESS_TOKEN=pk.eyJ1IjoicmJybnMxMyIsImEiOiJjbTRyYXZtMTMwMzZpMmpwZjc4bHJid2N5In0.NW9UbhJl_Itq2vOecR47Xw"
+            ],
+        },
+        {
+            "name": "sqa (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "sqa (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}
