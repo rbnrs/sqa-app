@@ -63,7 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '651712574900',
     projectId: 'sqa-app-rbrns',
     storageBucket: 'sqa-app-rbrns.firebasestorage.app',
-    iosBundleId: 'com.example.sqa',
+    iosBundleId: 'com.rbrns.sqa',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -72,7 +72,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '651712574900',
     projectId: 'sqa-app-rbrns',
     storageBucket: 'sqa-app-rbrns.firebasestorage.app',
-    iosBundleId: 'com.example.sqa',
+    iosBundleId: 'com.rbrns.sqa',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sqa/entities/sqa_event.dart';
+import 'package:sqa/utils/helper.dart';
 
 class EventDao {
   static List<SqaEvent> userEvents = [];
@@ -12,48 +15,51 @@ class EventDao {
       id: "1",
       name: "Some Football event",
       time: DateTime.now().add(const Duration(days: 3)),
-      type: SqaEventType.Football,
+      type: "Football",
     ));
 
     events.add(SqaEvent(
       id: "2",
       name: "Some Cart event",
       time: DateTime.now().add(const Duration(days: 2)),
-      type: SqaEventType.Cart,
+      type: "Football",
     ));
 
     events.add(SqaEvent(
       id: "3",
       name: "Some Basketball event",
       time: DateTime.now().add(const Duration(days: 1)),
-      type: SqaEventType.Basketball,
+      type: "Football",
     ));
 
     events.add(SqaEvent(
       id: "4",
       name: "Some Paddel event",
       time: DateTime.now().add(const Duration(hours: 7)),
-      type: SqaEventType.Paddel,
+      type: "Football",
     ));
 
     events.add(SqaEvent(
       id: "5",
       name: "Some Football event",
       time: DateTime.now().add(const Duration(minutes: 35)),
-      type: SqaEventType.Football,
+      type: "Football",
     ));
 
     events.add(SqaEvent(
       id: "6",
       name: "Some Football event",
       time: DateTime.now().add(const Duration(days: 10)),
-      type: SqaEventType.Football,
+      type: "Football",
     ));
 
     return events;
   }
 
   Future<void> createSqaEvent(SqaEvent sqaEvent) async {
-    userEvents.add(sqaEvent);
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    DocumentReference ref =
+        await db.collection("events").add(sqaEvent.toJSON());
+    debugPrint("Add ${ref.id}");
   }
 }

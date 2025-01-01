@@ -190,6 +190,7 @@ class SqaTheme {
           if (states.contains(WidgetState.selected)) {
             return primaryColor;
           }
+          return null;
         }),
         yearForegroundColor: WidgetStatePropertyAll(fontColor),
         //  todayBackgroundColor: WidgetStatePropertyAll(secondaryColor),
@@ -198,6 +199,8 @@ class SqaTheme {
           if (states.contains(WidgetState.selected)) {
             return primaryColor;
           }
+
+          return null;
         }),
         todayForegroundColor: WidgetStatePropertyAll(fontColor),
         dayForegroundColor: WidgetStatePropertyAll(fontColor),
@@ -238,67 +241,37 @@ class SqaTheme {
   }
 
   static TextTheme createTextTheme() {
-    return const TextTheme(
-      bodyLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 16,
-      ),
-      bodyMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-      ),
-      bodySmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 12,
-      ),
-      displayLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 45,
-      ),
-      displayMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 35,
-      ),
-      displaySmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 25,
-      ),
-      headlineLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 25,
-      ),
-      headlineMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 20,
-      ),
-      headlineSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 18,
-      ),
-      labelLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-      ),
-      labelMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 11,
-      ),
-      labelSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 10,
-      ),
-      titleLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 20,
-      ),
-      titleMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 16,
-      ),
-      titleSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-      ),
+    return TextTheme(
+      bodyLarge:
+          TextStyle(fontFamily: fontFamily, fontSize: 16, color: fontColor),
+      bodyMedium:
+          TextStyle(fontFamily: fontFamily, fontSize: 14, color: fontColor),
+      bodySmall:
+          TextStyle(fontFamily: fontFamily, fontSize: 12, color: fontColor),
+      displayLarge:
+          TextStyle(fontFamily: fontFamily, fontSize: 45, color: fontColor),
+      displayMedium:
+          TextStyle(fontFamily: fontFamily, fontSize: 35, color: fontColor),
+      displaySmall:
+          TextStyle(fontFamily: fontFamily, fontSize: 25, color: fontColor),
+      headlineLarge:
+          TextStyle(fontFamily: fontFamily, fontSize: 25, color: fontColor),
+      headlineMedium:
+          TextStyle(fontFamily: fontFamily, fontSize: 20, color: fontColor),
+      headlineSmall:
+          TextStyle(fontFamily: fontFamily, fontSize: 18, color: fontColor),
+      labelLarge:
+          TextStyle(fontFamily: fontFamily, fontSize: 14, color: fontColor),
+      labelMedium:
+          TextStyle(fontFamily: fontFamily, fontSize: 11, color: fontColor),
+      labelSmall:
+          TextStyle(fontFamily: fontFamily, fontSize: 10, color: fontColor),
+      titleLarge:
+          TextStyle(fontFamily: fontFamily, fontSize: 20, color: fontColor),
+      titleMedium:
+          TextStyle(fontFamily: fontFamily, fontSize: 16, color: fontColor),
+      titleSmall:
+          TextStyle(fontFamily: fontFamily, fontSize: 14, color: fontColor),
     );
   }
 }

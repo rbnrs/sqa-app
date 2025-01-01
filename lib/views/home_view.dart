@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sqa/entities/sqa_event.dart';
 import 'package:sqa/model/event_dao.dart';
@@ -13,7 +14,17 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  String user = "RBRNS";
+  String? user = "";
+
+  @override
+  initState() {
+    super.initState();
+    user = FirebaseAuth.instance.currentUser?.displayName;
+
+    if (user != null && user!.contains(" ")) {
+      user = user!.split(" ").first;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +33,9 @@ class _HomeViewState extends State<HomeView> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed('/settings');
+            },
             icon: const Icon(
               Icons.settings,
             ),

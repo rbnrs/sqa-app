@@ -1,4 +1,4 @@
-package com.example.sqa
+package com.rbrns.sqa
 
 import io.flutter.embedding.android.FlutterActivity
 

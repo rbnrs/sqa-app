@@ -15,6 +15,12 @@ dependencies:
   intl: ^0.20.1
   mapbox_maps_flutter: ^2.0.0
   geolocator: ^13.0.2
+  firebase_core: ^3.9.0
+  firebase_auth: ^5.3.4
+  country_flags: ^3.2.0
+  google_sign_in: ^6.2.2
+  cloud_firestore: ^5.6.0
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:
@@ -31,3 +37,6 @@ flutter:
     - family: BebasNeue
       fonts:
         - asset: assets/fonts/BebasNeue-Regular.ttf
+    - family: FontAwesome
+      fonts:
+        - asset: assets/fonts/FontAwesomeIcon.ttf

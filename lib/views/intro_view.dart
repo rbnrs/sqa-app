@@ -1,3 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,16 +18,19 @@ class _IntroViewState extends State<IntroView> {
   bool hasError = false;
   String errorMsg = "";
 
+  late Future _checkAppRequirementsFuture;
+
   @override
   initState() {
     super.initState();
+    _checkAppRequirementsFuture = _checkAppRequirements()!;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: FutureBuilder(
-      future: _checkAppRequirements(),
+      future: _checkAppRequirementsFuture,
       builder: (context, snapshot) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -66,9 +73,14 @@ class _IntroViewState extends State<IntroView> {
       }
     }
 
-    Navigator.of(context).pushNamed('/home');
-
-    debugPrint("Everthing okay");
+    FirebaseAuth auth = FirebaseAuth.instance;
+    auth.authStateChanges().listen((user) {
+      if (user == null) {
+        Navigator.of(context).pushNamed('/login');
+      } else {
+        Navigator.of(context).pushNamed('/home');
+      }
+    });
   }
 
   void _showErrorMessage(String errorMessage) {

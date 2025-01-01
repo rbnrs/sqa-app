@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,13 +8,18 @@ import 'package:sqa/views/create_event_view.dart';
 import 'package:sqa/views/event_view.dart';
 import 'package:sqa/views/home_view.dart';
 import 'package:sqa/views/intro_view.dart';
+import 'package:sqa/views/login_view.dart';
 import 'package:sqa/views/settings_view.dart';
+import 'package:sqa/views/sign_in_view_email_pw.dart';
+import 'package:sqa/views/sign_in_view_with_phone_number.dart';
+import 'package:sqa/views/sign_up_view.dart';
 import 'package:sqa/views/squad_view.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   String accessToken = const String.fromEnvironment("ACCESS_TOKEN");
   MapboxOptions.setAccessToken(accessToken);
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -47,8 +53,12 @@ class MyApp extends StatelessWidget {
         dialogTheme: SqaTheme.createDialogTheme(),
         textTheme: SqaTheme.createTextTheme(),
       ),
-      home: const IntroView(),
+      initialRoute: '/',
       routes: {
+        '/': (_) => const IntroView(),
+        '/login': (_) => const LoginView(),
+        '/signIn': (_) => const SignInViewEmailPw(),
+        '/signUp': (_) => const SignUpView(),
         '/home': (_) => const HomeView(),
         '/squad': (_) => const SquadView(),
         '/event': (_) => const EventView(),
