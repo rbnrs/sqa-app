@@ -48,7 +48,7 @@ class _EventQuickInfoState extends State<EventQuickInfo> {
                       .copyWith(color: SqaTheme.fontColor),
                 ),
                 Text(
-                  SqaHelper().leftTimeForEvent(widget.sqaEvent.time),
+                  "", //SqaHelper().leftTimeForEvent(widget.sqaEvent.time),
                   style: Theme.of(context)
                       .textTheme
                       .titleSmall!

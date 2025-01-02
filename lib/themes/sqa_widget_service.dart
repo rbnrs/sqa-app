@@ -55,4 +55,16 @@ class SqaWidgetService {
           backgroundColor: Colors.red),
     );
   }
+
+  void showSnackbar(BuildContext context, String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          msg,
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: SqaTheme.secondaryColor,
+      ),
+    );
+  }
 }

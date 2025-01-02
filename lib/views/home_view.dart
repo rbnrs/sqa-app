@@ -101,29 +101,51 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget createEventScheduleList() {
-    List<SqaEvent> events = EventDao().getUpcomingEvents();
-    List<Widget> eventItems = [];
+    return FutureBuilder(
+      future: EventDao().getEventsUserHasRegistered(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          List<SqaEvent>? events = snapshot.data;
+          List<Widget> eventItems = [];
 
-    for (SqaEvent event in events) {
-      if (eventItems.length < 5) {
-        eventItems.add(
-          EventQuickInfo(
-            sqaEvent: event,
-          ),
+          if (events == null || events.isEmpty) {
+            return Text(
+              "No upcoming events",
+              style: Theme.of(context)
+                  .textTheme
+                  .labelMedium!
+                  .copyWith(color: SqaTheme.subFontColor),
+            );
+          }
+
+          for (SqaEvent event in events) {
+            if (eventItems.length < 5) {
+              eventItems.add(
+                EventQuickInfo(
+                  sqaEvent: event,
+                ),
+              );
+            }
+          }
+
+          if (events.length > 5) {
+            eventItems.add(SizedBox(
+              width: 100,
+              child: TextButton(
+                  onPressed: () {}, child: const Text("More Events")),
+            ));
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: eventItems,
+          );
+        }
+
+        return const Center(
+          child: CircularProgressIndicator(),
         );
-      }
-    }
-
-    if (events.length > 5) {
-      eventItems.add(SizedBox(
-        width: 100,
-        child: TextButton(onPressed: () {}, child: const Text("More Events")),
-      ));
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: eventItems,
+      },
     );
   }
 
@@ -132,10 +154,11 @@ class _HomeViewState extends State<HomeView> {
       margin: const EdgeInsets.all(SqaSpacing.mediumMargin),
       height: 50,
       child: ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed('/event');
-          },
-          child: const Text("Upcoming Events")),
+        onPressed: () {
+          Navigator.of(context).pushNamed('/event');
+        },
+        child: const Text("Explore Events"),
+      ),
     );
   }
 
@@ -143,7 +166,10 @@ class _HomeViewState extends State<HomeView> {
     return Container(
       margin: SqaSpacing.mediumHorizontalPadding,
       height: 50,
-      child: FilledButton(onPressed: () {}, child: const Text("Join Squad")),
+      child: FilledButton(
+        onPressed: () {},
+        child: const Text("Join Squad"),
+      ),
     );
   }
 }

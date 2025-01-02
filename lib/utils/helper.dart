@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:uuid/v1.dart';
 
 class SqaHelper {
@@ -129,5 +130,20 @@ class SqaHelper {
     String? uuid = const UuidV1().generate();
 
     return "$uuid$uid";
+  }
+
+  String getEndtimeForEvent(String? startDateP, String? durationP) {
+    if (startDateP == null || durationP == null) return "";
+    intl.DateFormat dateFormat = intl.DateFormat("dd-MM-yyyy HH:mm");
+    intl.DateFormat timeFormat = intl.DateFormat("HH:mm");
+
+    DateTime startDate = dateFormat.parse(startDateP);
+
+    int hours = int.parse(durationP.split(":").first);
+    int minutes = int.parse(durationP.split(":").last);
+
+    DateTime endDate = startDate.add(Duration(hours: hours, minutes: minutes));
+
+    return timeFormat.format(endDate);
   }
 }

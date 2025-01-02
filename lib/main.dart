@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:sqa/themes/sqa_theme.dart';
 import 'package:sqa/views/create_event_view.dart';
+import 'package:sqa/views/detail_view.dart';
 import 'package:sqa/views/event_view.dart';
 import 'package:sqa/views/home_view.dart';
 import 'package:sqa/views/intro_view.dart';
@@ -54,12 +55,14 @@ class MyApp extends StatelessWidget {
         textTheme: SqaTheme.createTextTheme(),
       ),
       initialRoute: '/',
+      //TODO dynamic routing for detail route so we can pass eventid
       routes: {
         '/': (_) => const IntroView(),
         '/login': (_) => const LoginView(),
         '/signIn': (_) => const SignInViewEmailPw(),
         '/signUp': (_) => const SignUpView(),
         '/home': (_) => const HomeView(),
+        '/detail': (_) => const SqaDetailView(),
         '/squad': (_) => const SquadView(),
         '/event': (_) => const EventView(),
         '/settings': (_) => const SettingsView(),

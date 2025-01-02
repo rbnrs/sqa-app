@@ -1,18 +1,28 @@
 import 'dart:convert';
 
-enum SqaEventType { typeA, typeB, typeC } // Replace with actual event types
-
 class SqaEvent {
   final String id;
   final String name;
-  final DateTime time;
-  final String type;
+  final String sportsType;
+  final String creator;
+  final String startDate;
+  final String duration;
+  final int maxParticipants;
+  final String location;
+  final String description;
+  final List<String> participants;
 
   SqaEvent({
     required this.id,
     required this.name,
-    required this.time,
-    required this.type,
+    required this.sportsType,
+    required this.creator,
+    required this.startDate,
+    required this.location,
+    required this.description,
+    required this.maxParticipants,
+    required this.duration,
+    required this.participants,
   });
 
   // Convert SqaEvent to JSON
@@ -20,8 +30,14 @@ class SqaEvent {
     return {
       'id': id,
       'name': name,
-      'time': time.toIso8601String(),
-      'type': type.toString().split('.').last, // Save enum as a string
+      'sportsType': sportsType, // Stored as string
+      'creator': creator,
+      'startDate': startDate,
+      'duration': duration,
+      'maxParticipants': maxParticipants,
+      'location': location,
+      'description': description,
+      'participants': participants,
     };
   }
 
@@ -30,8 +46,14 @@ class SqaEvent {
     return SqaEvent(
       id: map['id'] as String,
       name: map['name'] as String,
-      time: DateTime.parse(map['time'] as String),
-      type: map['type'] as String,
+      sportsType: map['sportsType'] as String,
+      creator: map['creator'] as String,
+      startDate: map['startDate'] as String,
+      duration: map['duration'] as String,
+      maxParticipants: map['maxParticipants'] as int,
+      location: map['location'] as String,
+      description: map['description'] as String,
+      participants: List<String>.from(map['participants'] as List),
     );
   }
 

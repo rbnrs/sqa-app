@@ -1,13 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqa/entities/sport_type.dart';
+import 'package:sqa/entities/sqa_event.dart';
 import 'package:sqa/model/event_dao.dart';
 import 'package:sqa/model/sports_dao.dart';
 import 'package:sqa/themes/sqa_spacing.dart';
 import 'package:sqa/themes/sqa_theme.dart';
 import 'package:sqa/themes/sqa_widget_service.dart';
+import 'package:sqa/utils/helper.dart';
 import 'package:sqa/views/location_picker_view.dart';
 
 class CreateEventView extends StatefulWidget {
@@ -22,6 +25,8 @@ class _CreateEventViewState extends State<CreateEventView> {
   final _durationPlaceholder = "Pick a duration";
   final _locationPlaceholder = "Pick a location";
 
+  String? _eventName;
+  String? _eventDescription;
   String? _selectedSportsType;
   String? _startDate;
   String? _duration;
@@ -80,6 +85,9 @@ class _CreateEventViewState extends State<CreateEventView> {
                     return "Please add a event name";
                   }
                   return null;
+                },
+                onChanged: (value) {
+                  _eventName = value;
                 },
                 cursorColor: SqaTheme.secondaryColor,
                 style: Theme.of(context)
@@ -166,10 +174,29 @@ class _CreateEventViewState extends State<CreateEventView> {
                 width: MediaQuery.of(context).size.width,
                 height: 50,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    TimeOfDay? timeOfDay = await showTimePicker(
+                      context: context,
+                      initialTime: const TimeOfDay(hour: 0, minute: 0),
+                    );
+
+                    if (timeOfDay == null) return;
+
+                    String duration = timeOfDay.format(context);
+                    _duration = duration;
+                    setState(() {});
+                  },
                   child: Text(_duration!),
                 ),
               ),
+              const SizedBox(
+                height: SqaSpacing.smallPadding,
+              ),
+              _duration != _durationPlaceholder &&
+                      _startDate != _startDatePlaceholder
+                  ? Text(
+                      "Endtime for Event: ${SqaHelper().getEndtimeForEvent(_startDate, _duration)}")
+                  : Container(),
               const SizedBox(
                 height: SqaSpacing.largeMargin,
               ),
@@ -249,6 +276,9 @@ class _CreateEventViewState extends State<CreateEventView> {
                   }
                   return null;
                 },
+                onChanged: (value) {
+                  _eventDescription = value;
+                },
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium!
@@ -316,6 +346,14 @@ class _CreateEventViewState extends State<CreateEventView> {
   }
 
   Future<void> _createSqaEvent() async {
+    String? uuid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uuid == null) {
+      SqaWidgetService().showErrorSnackbar(
+          context, "Something went wrong. Please try again later..");
+      return;
+    }
+
     SqaWidgetService().showLoadingDialog(context, "Create Sqa Event...");
 
     if (!_formKey.currentState!.validate()) {
@@ -346,6 +384,23 @@ class _CreateEventViewState extends State<CreateEventView> {
       return;
     }
 
-    //await EventDao().createSqaEvent()
+    SqaEvent sqaEvent = SqaEvent(
+      id: "",
+      name: _eventName!,
+      sportsType: _selectedSportsType!,
+      creator: uuid,
+      startDate: _startDate!,
+      location: _location!,
+      description: _eventDescription!,
+      maxParticipants: _numberOfPatients.toInt(),
+      duration: _duration!,
+      participants: [],
+    );
+
+    await EventDao().createSqaEvent(sqaEvent);
+     SqaWidgetService()
+          .showSnackbar(context, "Successfu");
+    Navigator.of(context).pushNamedAndRemoveUntil('/detail',ModalRoute.withName('/home')); 
+
   }
 }
