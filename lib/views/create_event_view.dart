@@ -22,6 +22,7 @@ class CreateEventView extends StatefulWidget {
 
 class _CreateEventViewState extends State<CreateEventView> {
   final _startDatePlaceholder = "Pick a start date";
+  final _joinVoteEndDatePlaceholder = "Pick a date for vote end";
   final _durationPlaceholder = "Pick a duration";
   final _locationPlaceholder = "Pick a location";
 
@@ -29,13 +30,16 @@ class _CreateEventViewState extends State<CreateEventView> {
   String? _eventDescription;
   String? _selectedSportsType;
   String? _startDate;
+  String? _joinVoteEndDate;
   String? _duration;
   String? _location;
-  double _numberOfPatients = 1;
+  double _numberOfPatients = 2;
+  double _minParticipants = 2;
 
   final _formKey = GlobalKey<FormState>();
 
   DateTime? _startDateEvent;
+  DateTime? _joinVoteEndDateEvent;
 
   @override
   initState() {
@@ -43,6 +47,7 @@ class _CreateEventViewState extends State<CreateEventView> {
     _startDate = _startDatePlaceholder;
     _duration = _durationPlaceholder;
     _location = _locationPlaceholder;
+    _joinVoteEndDate = _joinVoteEndDatePlaceholder;
   }
 
   @override
@@ -201,7 +206,7 @@ class _CreateEventViewState extends State<CreateEventView> {
                 height: SqaSpacing.largeMargin,
               ),
               Text(
-                "Number of participants: ${_numberOfPatients.toInt()}",
+                "Number of participants ${_minParticipants.toInt()} (max. ${_numberOfPatients.toInt()})",
                 style: Theme.of(context)
                     .textTheme
                     .titleLarge!
@@ -210,17 +215,19 @@ class _CreateEventViewState extends State<CreateEventView> {
               const SizedBox(
                 height: SqaSpacing.smallMargin,
               ),
-              Slider(
-                  //TODO customize from backend
-                  value: _numberOfPatients,
-                  max: 30,
-                  divisions: 30,
-                  min: 1,
-                  onChanged: (val) {
-                    setState(() {
-                      _numberOfPatients = val;
-                    });
-                  }),
+              RangeSlider(
+                //TODO customize from backend
+                values: RangeValues(_minParticipants, _numberOfPatients),
+                max: 30,
+                divisions: 30,
+                min: 2,
+                onChanged: (val) {
+                  setState(() {
+                    _numberOfPatients = val.end;
+                    _minParticipants = val.start;
+                  });
+                },
+              ),
               const SizedBox(
                 height: SqaSpacing.largeMargin,
               ),
@@ -252,6 +259,62 @@ class _CreateEventViewState extends State<CreateEventView> {
                     });
                   },
                   child: Text(_location!),
+                ),
+              ),
+              const SizedBox(
+                height: SqaSpacing.largeMargin,
+              ),
+              Text(
+                "Join Enddate",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: SqaTheme.fontColor),
+              ),
+              Text(
+                "*decide until when people may participate in the event",
+                style: Theme.of(context)
+                    .textTheme
+                    .labelSmall!
+                    .copyWith(color: SqaTheme.subFontColor),
+              ),
+              const SizedBox(
+                height: SqaSpacing.smallMargin,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: OutlinedButton(
+                  onPressed: () async {
+                    DateTime? dateTime = await showDatePicker(
+                        context: context,
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(
+                          DateTime.now().year + 1,
+                          DateTime.now().month,
+                          DateTime.now().day,
+                        ));
+
+                    if (dateTime == null) return;
+
+                    TimeOfDay? timeOfDay = await showTimePicker(
+                      context: context,
+                      initialTime: const TimeOfDay(hour: 0, minute: 0),
+                    );
+
+                    if (timeOfDay == null) return;
+
+                    _joinVoteEndDateEvent = dateTime;
+                    _joinVoteEndDateEvent = _startDateEvent!.copyWith(
+                        hour: timeOfDay.hour, minute: timeOfDay.minute);
+
+                    DateFormat dateFormat = DateFormat("dd-MM-yyyy HH:mm");
+                    _joinVoteEndDate =
+                        dateFormat.format(_joinVoteEndDateEvent!);
+
+                    setState(() {});
+                  },
+                  child: Text(_joinVoteEndDate!),
                 ),
               ),
               const SizedBox(
@@ -370,6 +433,13 @@ class _CreateEventViewState extends State<CreateEventView> {
       return;
     }
 
+    if (_joinVoteEndDate == _joinVoteEndDatePlaceholder) {
+      SqaWidgetService().showErrorSnackbar(
+          context, "Please select a end date for joining the event!");
+      Navigator.of(context).pop();
+      return;
+    }
+
     if (_location == _locationPlaceholder) {
       SqaWidgetService()
           .showErrorSnackbar(context, "Please select a event location!");
@@ -384,23 +454,47 @@ class _CreateEventViewState extends State<CreateEventView> {
       return;
     }
 
+    if (_startDateEvent!.millisecondsSinceEpoch <
+        _joinVoteEndDateEvent!.millisecondsSinceEpoch) {
+      SqaWidgetService().showErrorSnackbar(
+          context, "Vote enddate can not be in the future of the event!");
+      Navigator.of(context).pop();
+      return;
+    }
+
+    if (_minParticipants > _numberOfPatients) {
+      SqaWidgetService().showErrorSnackbar(context,
+          "Min. Participants can not be greater than max. Participants!");
+      Navigator.of(context).pop();
+      return;
+    }
+
     SqaEvent sqaEvent = SqaEvent(
       id: "",
       name: _eventName!,
       sportsType: _selectedSportsType!,
       creator: uuid,
       startDate: _startDate!,
+      joinVoteEndDate: _joinVoteEndDate!,
       location: _location!,
       description: _eventDescription!,
+      minParticipants: _numberOfPatients.toInt(),
       maxParticipants: _numberOfPatients.toInt(),
       duration: _duration!,
       participants: [],
     );
 
-    await EventDao().createSqaEvent(sqaEvent);
-     SqaWidgetService()
-          .showSnackbar(context, "Successfu");
-    Navigator.of(context).pushNamedAndRemoveUntil('/detail',ModalRoute.withName('/home')); 
+    String eventId = await EventDao().createSqaEvent(sqaEvent);
 
+    String routeName = Uri(
+      path: '/detail',
+      queryParameters: {
+        'eventId': eventId,
+      },
+    ).toString();
+
+    SqaWidgetService().showSnackbar(context, "Successful");
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil(routeName, ModalRoute.withName('/home'));
   }
 }

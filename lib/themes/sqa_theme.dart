@@ -243,11 +243,11 @@ class SqaTheme {
   static TextTheme createTextTheme() {
     return TextTheme(
       bodyLarge:
-          TextStyle(fontFamily: fontFamily, fontSize: 16, color: fontColor),
+          TextStyle(fontFamily: fontFamily, fontSize: 20, color: fontColor),
       bodyMedium:
-          TextStyle(fontFamily: fontFamily, fontSize: 14, color: fontColor),
+          TextStyle(fontFamily: fontFamily, fontSize: 18, color: fontColor),
       bodySmall:
-          TextStyle(fontFamily: fontFamily, fontSize: 12, color: fontColor),
+          TextStyle(fontFamily: fontFamily, fontSize: 16, color: fontColor),
       displayLarge:
           TextStyle(fontFamily: fontFamily, fontSize: 45, color: fontColor),
       displayMedium:
@@ -257,21 +257,29 @@ class SqaTheme {
       headlineLarge:
           TextStyle(fontFamily: fontFamily, fontSize: 25, color: fontColor),
       headlineMedium:
-          TextStyle(fontFamily: fontFamily, fontSize: 20, color: fontColor),
+          TextStyle(fontFamily: fontFamily, fontSize: 22, color: fontColor),
       headlineSmall:
-          TextStyle(fontFamily: fontFamily, fontSize: 18, color: fontColor),
-      labelLarge:
-          TextStyle(fontFamily: fontFamily, fontSize: 14, color: fontColor),
-      labelMedium:
-          TextStyle(fontFamily: fontFamily, fontSize: 11, color: fontColor),
-      labelSmall:
-          TextStyle(fontFamily: fontFamily, fontSize: 10, color: fontColor),
-      titleLarge:
           TextStyle(fontFamily: fontFamily, fontSize: 20, color: fontColor),
-      titleMedium:
+      labelLarge:
+          TextStyle(fontFamily: fontFamily, fontSize: 20, color: fontColor),
+      labelMedium:
+          TextStyle(fontFamily: fontFamily, fontSize: 18, color: fontColor),
+      labelSmall:
           TextStyle(fontFamily: fontFamily, fontSize: 16, color: fontColor),
+      titleLarge:
+          TextStyle(fontFamily: fontFamily, fontSize: 24, color: fontColor),
+      titleMedium:
+          TextStyle(fontFamily: fontFamily, fontSize: 20, color: fontColor),
       titleSmall:
-          TextStyle(fontFamily: fontFamily, fontSize: 14, color: fontColor),
+          TextStyle(fontFamily: fontFamily, fontSize: 18, color: fontColor),
+    );
+  }
+
+  static CardTheme createCardTheme() {
+    return CardTheme(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5),
+      ),
     );
   }
 }

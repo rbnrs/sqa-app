@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sqa/entities/sport_type.dart';
 import 'package:sqa/entities/sqa_event.dart';
+import 'package:sqa/model/sports_dao.dart';
 import 'package:sqa/themes/sqa_spacing.dart';
 import 'package:sqa/themes/sqa_theme.dart';
 import 'package:sqa/utils/helper.dart';
@@ -16,8 +18,25 @@ class EventQuickInfo extends StatefulWidget {
 class _EventQuickInfoState extends State<EventQuickInfo> {
   @override
   Widget build(BuildContext context) {
+    List<SportType> sportsTypes = SportsDao().getSportsTypes();
+    SportType sportType = sportsTypes.firstWhere(
+      (element) {
+        return element.name == widget.sqaEvent.sportsType;
+      },
+    );
+
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        String routeName = Uri(
+          path: '/detail',
+          queryParameters: {
+            'eventId': widget.sqaEvent.id,
+          },
+        ).toString();
+
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(routeName, ModalRoute.withName('/home'));
+      },
       child: Container(
         width: MediaQuery.of(context).size.width,
         padding: SqaSpacing.mediumPaddingEdgeInsets,
@@ -30,7 +49,7 @@ class _EventQuickInfoState extends State<EventQuickInfo> {
                 borderRadius: BorderRadius.circular(500),
               ),
               child: Icon(
-                Icons.sports,
+                sportType.icon,
                 color: SqaTheme.backgroundColor,
               ),
             ),
@@ -48,7 +67,8 @@ class _EventQuickInfoState extends State<EventQuickInfo> {
                       .copyWith(color: SqaTheme.fontColor),
                 ),
                 Text(
-                  "", //SqaHelper().leftTimeForEvent(widget.sqaEvent.time),
+                  SqaHelper().leftTimeForEvent(SqaHelper()
+                      .eventStartDateToDateTime(widget.sqaEvent.startDate)),
                   style: Theme.of(context)
                       .textTheme
                       .titleSmall!

@@ -6,11 +6,12 @@ import 'package:sqa/themes/sqa_theme.dart';
 class CountDownWidget extends StatefulWidget {
   final int countdown;
   final Function onComplete;
-  const CountDownWidget({
-    super.key,
-    required this.countdown,
-    required this.onComplete,
-  });
+  final double? fontSize;
+  const CountDownWidget(
+      {super.key,
+      required this.countdown,
+      required this.onComplete,
+      this.fontSize});
 
   @override
   State<CountDownWidget> createState() => _CountDownWidgetState();
@@ -51,10 +52,10 @@ class _CountDownWidgetState extends State<CountDownWidget> {
   Widget build(BuildContext context) {
     return Text(
       formatTime(_remainingTime),
-      style: Theme.of(context)
-          .textTheme
-          .labelLarge!
-          .copyWith(color: SqaTheme.subFontColor),
+      style: Theme.of(context).textTheme.labelLarge!.copyWith(
+            color: SqaTheme.subFontColor,
+            fontSize: widget.fontSize,
+          ),
     );
   }
 }

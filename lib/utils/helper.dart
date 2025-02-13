@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/v1.dart';
 
 class SqaHelper {
@@ -104,6 +105,12 @@ class SqaHelper {
     return byteData!.buffer.asUint8List();
   }
 
+  Future<void> signGoogleOut() async {
+    FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+    await GoogleSignIn().disconnect();
+  }
+
   Future<bool> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -145,5 +152,40 @@ class SqaHelper {
     DateTime endDate = startDate.add(Duration(hours: hours, minutes: minutes));
 
     return timeFormat.format(endDate);
+  }
+
+  String getEventStartToLocale(String? startDateP) {
+    //TODO finish
+    intl.DateFormat dateFormat = intl.DateFormat("dd-MM-yyyy HH:mm");
+
+    if (startDateP == null) return "-";
+
+    DateTime startDate = dateFormat.parse(startDateP);
+
+    return "";
+  }
+
+  DateTime eventStartDateToDateTime(String startDateP) {
+    intl.DateFormat dateFormat = intl.DateFormat("dd-MM-yyyy HH:mm");
+    return dateFormat.parse(startDateP);
+  }
+
+  int getRemainingTimeToEventStartInSeconds(String startDateP) {
+    intl.DateFormat dateFormat = intl.DateFormat("dd-MM-yyyy HH:mm");
+    DateTime startDateTime = dateFormat.parse(startDateP);
+    int remainingTime = (startDateTime.millisecondsSinceEpoch -
+            DateTime.now().millisecondsSinceEpoch) ~/
+        1000;
+    return remainingTime;
+  }
+
+  Future<void> openMap(double latitude, double longitude) async {
+    String googleUrl =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    if (await canLaunchUrl(Uri.parse(googleUrl))) {
+      await launchUrl(Uri.parse(googleUrl));
+    } else {
+      throw 'Could not open the map.';
+    }
   }
 }

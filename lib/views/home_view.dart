@@ -16,6 +16,8 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   String? user = "";
 
+  late Future _loadEventSchedule;
+
   @override
   initState() {
     super.initState();
@@ -24,6 +26,8 @@ class _HomeViewState extends State<HomeView> {
     if (user != null && user!.contains(" ")) {
       user = user!.split(" ").first;
     }
+
+    _loadEventSchedule = _readEventSchedule();
   }
 
   @override
@@ -85,11 +89,25 @@ class _HomeViewState extends State<HomeView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "My event schedule",
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: SqaTheme.fontColor,
+          Row(
+            children: [
+              Text(
+                "My event schedule",
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: SqaTheme.fontColor,
+                    ),
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () {
+                  _loadEventSchedule = _readEventSchedule();
+                  setState(() {});
+                },
+                icon: const Icon(
+                  Icons.refresh,
                 ),
+              )
+            ],
           ),
           const SizedBox(
             height: SqaSpacing.mediumMargin,
@@ -102,7 +120,7 @@ class _HomeViewState extends State<HomeView> {
 
   Widget createEventScheduleList() {
     return FutureBuilder(
-      future: EventDao().getEventsUserHasRegistered(),
+      future: _loadEventSchedule,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           List<SqaEvent>? events = snapshot.data;
@@ -171,5 +189,20 @@ class _HomeViewState extends State<HomeView> {
         child: const Text("Join Squad"),
       ),
     );
+  }
+
+  Future _readEventSchedule() async {
+    List<SqaEvent>? userHasRegistered =
+        await EventDao().getEventsUserHasRegistered();
+    List<SqaEvent>? userHasCreated = await EventDao().getEventsCreatedByUser();
+
+    if (userHasCreated == null && userHasRegistered == null) return null;
+
+    List<SqaEvent> eventSchedule = [];
+
+    if (userHasCreated != null) eventSchedule.addAll(userHasCreated);
+    if (userHasRegistered != null) eventSchedule.addAll(userHasRegistered);
+
+    return eventSchedule;
   }
 }

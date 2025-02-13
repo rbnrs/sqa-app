@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sqa/themes/sqa_spacing.dart';
+import 'package:sqa/utils/helper.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
@@ -18,11 +19,11 @@ class _SettingsViewState extends State<SettingsView> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: OutlinedButton(
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
+            onPressed: () async {
+              await SqaHelper().signGoogleOut();
               Navigator.of(context).popUntil(ModalRoute.withName('/'));
             },
-            child: Text("Logout")),
+            child: const Text("Logout")),
       ),
     );
   }

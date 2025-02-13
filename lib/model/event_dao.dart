@@ -1,17 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
+import 'package:sqa/entities/sport_type.dart';
 import 'package:sqa/entities/sqa_event.dart';
+import 'package:sqa/utils/helper.dart';
 
 class EventDao {
   static List<SqaEvent> userEvents = [];
 
-  List<SqaEvent> getUpcomingEvents() {
-    //TODO replace
+  Future<List<SqaEvent>?> getUpcomingEvents(String sportType) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    FirebaseFirestore db = FirebaseFirestore.instance;
 
-    List<SqaEvent> events = [];
+    String? userId = auth.currentUser?.uid;
+    List<SqaEvent> sqaEvents = [];
 
-    return events;
+    if (userId == null) return null;
+
+    QuerySnapshot<Map<String, dynamic>> snapshot = await db
+        .collection("events")
+        .where("sportsType", isEqualTo: sportType)
+        .get();
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot
+        in snapshot.docs) {
+      Map<String, dynamic> snapshotRaw = {'id': docSnapshot.id};
+      snapshotRaw.addAll(docSnapshot.data());
+      snapshotRaw['id'] = docSnapshot.id;
+      sqaEvents.add(SqaEvent.fromMap(snapshotRaw));
+    }
+
+    sqaEvents = sqaEvents.where(
+      (element) {
+        return SqaHelper()
+                .getRemainingTimeToEventStartInSeconds(element.startDate) >
+            0;
+      },
+    ).toList();
+
+    return sqaEvents;
   }
 
   Future<String> createSqaEvent(SqaEvent sqaEvent) async {
@@ -37,8 +63,50 @@ class EventDao {
         in snapshot.docs) {
       Map<String, dynamic> snapshotRaw = {'id': docSnapshot.id};
       snapshotRaw.addAll(docSnapshot.data());
+      snapshotRaw['id'] = docSnapshot.id;
       sqaEvents.add(SqaEvent.fromMap(snapshotRaw));
     }
+
+    sqaEvents = sqaEvents.where(
+      (element) {
+        return SqaHelper()
+                .getRemainingTimeToEventStartInSeconds(element.startDate) >
+            0;
+      },
+    ).toList();
+
+    return sqaEvents;
+  }
+
+  Future<List<SqaEvent>?> getEventsUserHasCreated() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    String? userId = auth.currentUser?.uid;
+    List<SqaEvent> sqaEvents = [];
+
+    if (userId == null) return null;
+
+    QuerySnapshot<Map<String, dynamic>> snapshot = await db
+        .collection("events")
+        .where("createor", isEqualTo: userId)
+        .get();
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot
+        in snapshot.docs) {
+      Map<String, dynamic> snapshotRaw = {'id': docSnapshot.id};
+      snapshotRaw.addAll(docSnapshot.data());
+      snapshotRaw['id'] = docSnapshot.id;
+      sqaEvents.add(SqaEvent.fromMap(snapshotRaw));
+    }
+
+    sqaEvents = sqaEvents.where(
+      (element) {
+        return SqaHelper()
+                .getRemainingTimeToEventStartInSeconds(element.startDate) >
+            0;
+      },
+    ).toList();
 
     return sqaEvents;
   }
@@ -61,8 +129,17 @@ class EventDao {
         in snapshot.docs) {
       Map<String, dynamic> snapshotRaw = {'id': docSnapshot.id};
       snapshotRaw.addAll(docSnapshot.data());
+      snapshotRaw['id'] = docSnapshot.id;
       sqaEvents.add(SqaEvent.fromMap(snapshotRaw));
     }
+
+    sqaEvents = sqaEvents.where(
+      (element) {
+        return SqaHelper()
+                .getRemainingTimeToEventStartInSeconds(element.startDate) >
+            0;
+      },
+    ).toList();
 
     return sqaEvents;
   }
@@ -80,8 +157,17 @@ class EventDao {
         in snapshot.docs) {
       Map<String, dynamic> snapshotRaw = {'id': docSnapshot.id};
       snapshotRaw.addAll(docSnapshot.data());
+      snapshotRaw['id'] = docSnapshot.id;
       sqaEvents.add(SqaEvent.fromMap(snapshotRaw));
     }
+
+    sqaEvents = sqaEvents.where(
+      (element) {
+        return SqaHelper()
+                .getRemainingTimeToEventStartInSeconds(element.startDate) >
+            0;
+      },
+    ).toList();
 
     return sqaEvents;
   }
@@ -94,6 +180,7 @@ class EventDao {
     if (snapshot.exists) {
       Map<String, dynamic> snapshotRaw = {'id': snapshot.id};
       snapshotRaw.addAll(snapshot.data()!);
+      snapshotRaw['id'] = snapshot.id;
       return SqaEvent.fromMap(snapshotRaw);
     }
 

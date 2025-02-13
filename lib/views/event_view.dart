@@ -28,6 +28,13 @@ class _EventViewState extends State<EventView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Upcoming events"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/joinEventByQR');
+              },
+              icon: const Icon(Icons.qr_code))
+        ],
       ),
       body: CustomScrollView(
         slivers: [

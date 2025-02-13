@@ -6,7 +6,9 @@ class SqaEvent {
   final String sportsType;
   final String creator;
   final String startDate;
+  final String joinVoteEndDate;
   final String duration;
+  final int minParticipants;
   final int maxParticipants;
   final String location;
   final String description;
@@ -18,8 +20,10 @@ class SqaEvent {
     required this.sportsType,
     required this.creator,
     required this.startDate,
+    required this.joinVoteEndDate,
     required this.location,
     required this.description,
+    required this.minParticipants,
     required this.maxParticipants,
     required this.duration,
     required this.participants,
@@ -33,7 +37,9 @@ class SqaEvent {
       'sportsType': sportsType, // Stored as string
       'creator': creator,
       'startDate': startDate,
+      'joinVoteEndDate': joinVoteEndDate,
       'duration': duration,
+      'minParticipants': minParticipants,
       'maxParticipants': maxParticipants,
       'location': location,
       'description': description,
@@ -49,7 +55,9 @@ class SqaEvent {
       sportsType: map['sportsType'] as String,
       creator: map['creator'] as String,
       startDate: map['startDate'] as String,
+      joinVoteEndDate: map['joinVoteEndDate'],
       duration: map['duration'] as String,
+      minParticipants: map['minParticipants'] as int,
       maxParticipants: map['maxParticipants'] as int,
       location: map['location'] as String,
       description: map['description'] as String,
