@@ -21,7 +21,8 @@ class _EventViewState extends State<EventView> {
 
     if (searchString != "") {
       sportTypeCategories = sportTypeCategories
-          .where((sportType) => sportType.name.contains(searchString))
+          .where((sportType) =>
+              sportType.name.toLowerCase().contains(searchString.toLowerCase()))
           .toList();
     }
 
@@ -36,18 +37,22 @@ class _EventViewState extends State<EventView> {
               icon: const Icon(Icons.qr_code))
         ],
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: createSportsCategorySearchField(),
-          ),
-          SliverList.builder(
-            itemCount: sportTypeCategories.length,
-            itemBuilder: (context, index) {
-              return SportsTypeCategory(
-                sportType: sportTypeCategories[index],
-              );
-            },
+      body: Column(
+        children: [
+          createSportsCategorySearchField(),
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                SliverList.builder(
+                  itemCount: sportTypeCategories.length,
+                  itemBuilder: (context, index) {
+                    return SportsTypeCategory(
+                      sportType: sportTypeCategories[index],
+                    );
+                  },
+                )
+              ],
+            ),
           )
         ],
       ),

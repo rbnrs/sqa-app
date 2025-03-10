@@ -6,6 +6,7 @@ import 'package:sqa/model/event_dao.dart';
 import 'package:sqa/model/users_dao.dart';
 import 'package:sqa/themes/sqa_spacing.dart';
 import 'package:sqa/themes/sqa_theme.dart';
+import 'package:sqa/themes/sqa_widget_service.dart';
 import 'package:sqa/utils/helper.dart';
 import 'package:sqa/widgets/event_count_down_widget.dart';
 
@@ -37,9 +38,9 @@ class _SqaDetailViewState extends State<SqaDetailView> {
         actions: [
           IconButton(
             onPressed: () {
-              List<String> coordinates_string = _sqaEvent!.location.split(",");
-              SqaHelper().openMap(double.parse(coordinates_string[0]),
-                  double.parse(coordinates_string[1]));
+              List<String> coordinatesString = _sqaEvent!.location.split(",");
+              SqaHelper().openMap(double.parse(coordinatesString[0]),
+                  double.parse(coordinatesString[1]));
             },
             icon: const Icon(Icons.location_on),
           )
@@ -51,7 +52,9 @@ class _SqaDetailViewState extends State<SqaDetailView> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done &&
                   !_cantFindEvent) {
-                return _checkVoteIsClosed() && _checkVoteIsClosed()
+                FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+                String userId = firebaseAuth.currentUser!.uid;
+                return _checkVoteIsClosed() && _checkIsUserEvent()
                     ? ElevatedButton(
                         onPressed: () {},
                         style: Theme.of(context)
@@ -64,10 +67,32 @@ class _SqaDetailViewState extends State<SqaDetailView> {
                                     const WidgetStatePropertyAll(Colors.red)),
                         child: const Text("Close Event"),
                       )
-                    : ElevatedButton(
-                        onPressed: () {},
-                        child: const Text("Join Event"),
-                      );
+                    : !_checkIsUserEvent() &&
+                            !_sqaEvent!.participants.contains(userId)
+                        ? ElevatedButton(
+                            onPressed: () {
+                              _joinEvent();
+                            },
+                            child: const Text("Join Event"),
+                          )
+                        : !_checkIsUserEvent() &&
+                                _sqaEvent!.participants.contains(userId)
+                            ? ElevatedButton(
+                                style: Theme.of(context)
+                                    .elevatedButtonTheme
+                                    .style!
+                                    .copyWith(
+                                        foregroundColor: WidgetStatePropertyAll(
+                                            SqaTheme.fontColor),
+                                        backgroundColor:
+                                            const WidgetStatePropertyAll(
+                                                Colors.red)),
+                                onPressed: () {
+                                  _leaveEvent(userId);
+                                },
+                                child: const Text("Leave Event"),
+                              )
+                            : Container();
               }
 
               return Container();
@@ -137,6 +162,7 @@ class _SqaDetailViewState extends State<SqaDetailView> {
               Column(
                 children: [
                   Card(
+                    color: Colors.white,
                     child: SizedBox(
                       height: 150,
                       child: QrImageView(data: widget.eventId),
@@ -253,7 +279,7 @@ class _SqaDetailViewState extends State<SqaDetailView> {
             height: SqaSpacing.mediumMargin,
           ),
           Text(
-            "Already joined (0 / ${_sqaEvent!.maxParticipants}): ",
+            "Already joined (${_sqaEvent!.participants.length} / ${_sqaEvent!.maxParticipants}): ",
             style: Theme.of(context).textTheme.labelMedium,
           ),
         ],
@@ -262,8 +288,10 @@ class _SqaDetailViewState extends State<SqaDetailView> {
   }
 
   Widget _createParticipantListItem(BuildContext context, int index) {
-    String participant =
-        _sqaEvent!.participants[index]; //TODO replace with read username
+    String participant = _sqaEvent!.participants[index];
+
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    String userId = firebaseAuth.currentUser!.uid;
 
     return InkWell(
       onTap: () {},
@@ -288,10 +316,27 @@ class _SqaDetailViewState extends State<SqaDetailView> {
                 const SizedBox(
                   width: SqaSpacing.mediumMargin,
                 ),
-                Text(
-                  participant,
-                  style: Theme.of(context).textTheme.titleLarge,
+                FutureBuilder(
+                  future: UsersDao().readUserByUserId(participant),
+                  builder: (context, snapshot) {
+                    String userName = participant;
+                    if (snapshot.hasData) {
+                      userName = snapshot.data!.username;
+                    }
+
+                    return Text(
+                      userName,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    );
+                  },
                 ),
+                const Spacer(),
+                participant == userId
+                    ? Icon(
+                        Icons.person,
+                        color: SqaTheme.primaryColor,
+                      )
+                    : Container()
               ],
             ),
           ],
@@ -314,5 +359,25 @@ class _SqaDetailViewState extends State<SqaDetailView> {
     }
 
     return false;
+  }
+
+  void _joinEvent() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String userId = auth.currentUser!.uid;
+    SqaWidgetService().showLoadingDialog(context, "Joining event");
+    await EventDao().joinEvent(userId, widget.eventId);
+    Navigator.of(context).pop();
+    _loadEventDataFuture = _loadEventData();
+    setState(() {});
+  }
+
+  Future<void> _leaveEvent(String userId) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String userId = auth.currentUser!.uid;
+    SqaWidgetService().showLoadingDialog(context, "Joining event");
+    await EventDao().removeFromEvent(userId, widget.eventId);
+    Navigator.of(context).pop();
+    _loadEventDataFuture = _loadEventData();
+    setState(() {});
   }
 }

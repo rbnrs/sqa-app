@@ -37,6 +37,8 @@ class EventDao {
       },
     ).toList();
 
+    if (sqaEvents.isEmpty) return null;
+
     return sqaEvents;
   }
 
@@ -87,10 +89,8 @@ class EventDao {
 
     if (userId == null) return null;
 
-    QuerySnapshot<Map<String, dynamic>> snapshot = await db
-        .collection("events")
-        .where("createor", isEqualTo: userId)
-        .get();
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await db.collection("events").where("creator", isEqualTo: userId).get();
 
     for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot
         in snapshot.docs) {
@@ -185,5 +185,31 @@ class EventDao {
     }
 
     return null;
+  }
+
+  Future<void> joinEvent(String userId, String eventId) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    SqaEvent? sqaEvent = await getEventById(eventId);
+
+    if (sqaEvent == null) {
+      throw Exception('Event does not exist. Please check event id');
+    }
+
+    sqaEvent.participants.add(userId);
+
+    await db.collection('events').doc(eventId).update(sqaEvent.toJSON());
+  }
+
+  Future<void> removeFromEvent(String userId, String eventId) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    SqaEvent? sqaEvent = await getEventById(eventId);
+
+    if (sqaEvent == null) {
+      throw Exception('Event does not exist. Please check event id');
+    }
+
+    sqaEvent.participants.remove(userId);
+
+    await db.collection('events').doc(eventId).update(sqaEvent.toJSON());
   }
 }

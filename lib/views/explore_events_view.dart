@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sqa/entities/sqa_event.dart';
 import 'package:sqa/model/event_dao.dart';
+import 'package:sqa/themes/sqa_theme.dart';
+import 'package:sqa/widgets/event_filter_dialog_widget.dart';
+import 'package:sqa/widgets/event_info_widget.dart';
 
 class ExploreEventsView extends StatefulWidget {
   final String sportsType;
@@ -12,6 +15,7 @@ class ExploreEventsView extends StatefulWidget {
 
 class _ExploreEventsViewState extends State<ExploreEventsView> {
   late Future<List<SqaEvent>?> _loadUpcomingEvents;
+  bool noEvents = false;
 
   @override
   initState() {
@@ -32,21 +36,40 @@ class _ExploreEventsViewState extends State<ExploreEventsView> {
               icon: const Icon(Icons.qr_code))
         ],
       ),
+      floatingActionButton: noEvents
+          ? Container()
+          : FloatingActionButton(
+              onPressed: () {
+                _showFilterDialog();
+              },
+              child: const Icon(Icons.filter_list),
+            ),
       body: FutureBuilder(
         future: _loadUpcomingEvents,
         builder: (context, snapshot) {
+          Widget contentWidget = const Center(
+            child: CircularProgressIndicator(),
+          );
+
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               List<SqaEvent> events = snapshot.data!;
-              return _showEventsList(events);
+              contentWidget = _showEventsList(events);
+            } else {
+              noEvents = true;
+              contentWidget = const Center(
+                child: Text("No upcoming events... :("),
+              );
             }
-            return const Center(
-              child: Text("No upcoming events... :("),
-            );
           }
 
-          return const Center(
-            child: CircularProgressIndicator(),
+          return RefreshIndicator(
+            color: SqaTheme.primaryColor,
+            child: contentWidget,
+            onRefresh: () async {
+              noEvents = false;
+              setState(() {});
+            },
           );
         },
       ),
@@ -54,15 +77,22 @@ class _ExploreEventsViewState extends State<ExploreEventsView> {
   }
 
   Widget _showEventsList(List<SqaEvent> events) {
-    return CustomScrollView(
-      slivers: [
-        SliverList.builder(
-          itemCount: events.length,
-          itemBuilder: (context, index) {
-            return Container();
-          },
-        )
-      ],
+    return ListView.builder(
+      itemCount: events.length,
+      itemBuilder: (context, index) {
+        return EventInfoWidget(
+          sqaEvent: events[index],
+        );
+      },
+    );
+  }
+
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const EventFilterDialogWidget();
+      },
     );
   }
 }

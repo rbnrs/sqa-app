@@ -277,6 +277,7 @@ class SqaTheme {
 
   static CardTheme createCardTheme() {
     return CardTheme(
+      color: secondaryColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5),
       ),

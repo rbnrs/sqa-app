@@ -185,7 +185,9 @@ class _HomeViewState extends State<HomeView> {
       margin: SqaSpacing.mediumHorizontalPadding,
       height: 50,
       child: FilledButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pushNamed('/squad');
+        },
         child: const Text("Join Squad"),
       ),
     );
